@@ -1,0 +1,292 @@
+{
+	"info": {
+		"_postman_id": "df9eed9e-adc0-4344-9d1e-2669aed4c2f7",
+		"name": "REST API basics: CRUD, test & variable",
+		"description": "# 🚀 Get started here\n\nThis template guides you through CRUD operations (GET, POST, PUT, DELETE), variables, and tests.\n\n## 🔖 **How to use this template**\n\n#### **Step 1: Send requests**\n\nRESTful APIs allow you to perform CRUD operations using the POST, GET, PUT, and DELETE HTTP methods.\n\nThis collection contains each of these [request](https://learning.postman.com/docs/sending-requests/requests/) types. Open each request and click \"Send\" to see what happens.\n\n#### **Step 2: View responses**\n\nObserve the response tab for status code (200 OK), response time, and size.\n\n#### **Step 3: Send new Body data**\n\nUpdate or add new data in \"Body\" in the POST request. Typically, Body data is also used in PUT request.\n\n```\n{\n    \"name\": \"Add your name in the body\"\n}\n\n ```\n\n#### **Step 4: Update the variable**\n\nVariables enable you to store and reuse values in Postman. We have created a [variable](https://learning.postman.com/docs/sending-requests/variables/) called `base_url` with the sample request [https://postman-api-learner.glitch.me](https://postman-api-learner.glitch.me). Replace it with your API endpoint to customize this collection.\n\n#### **Step 5: Add tests in the \"Scripts\" tab**\n\nAdding tests to your requests can help you confirm that your API is working as expected. You can write test scripts in JavaScript and view the output in the \"Test Results\" tab.\n\n<img src=\"https://content.pstmn.io/fa30ea0a-373d-4545-a668-e7b283cca343/aW1hZ2UucG5n\" alt=\"\" height=\"1530\" width=\"2162\">\n\n## 💪 Pro tips\n\n- Use folders to group related requests and organize the collection.\n    \n- Add more [scripts](https://learning.postman.com/docs/writing-scripts/intro-to-scripts/) to verify if the API works as expected and execute workflows.\n    \n\n## 💡Related templates\n\n[API testing basics](https://go.postman.co/redirect/workspace?type=personal&collectionTemplateId=e9a37a28-055b-49cd-8c7e-97494a21eb54&sourceTemplateId=ddb19591-3097-41cf-82af-c84273e56719)  \n[API documentation](https://go.postman.co/redirect/workspace?type=personal&collectionTemplateId=e9c28f47-1253-44af-a2f3-20dce4da1f18&sourceTemplateId=ddb19591-3097-41cf-82af-c84273e56719)  \n[Authorization methods](https://go.postman.co/redirect/workspace?type=personal&collectionTemplateId=31a9a6ed-4cdf-4ced-984c-d12c9aec1c27&sourceTemplateId=ddb19591-3097-41cf-82af-c84273e56719)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "41475174"
+	},
+	"item": [
+		{
+			"name": "Productos",
+			"item": [
+				{
+					"name": "Products",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Código de estado: 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// Validar que la respuesta contenga un objeto JSON",
+									"pm.test(\"La respuesta es un objeto JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"",
+									"// Validar que los datos en la respuesta coincidan con lo enviado",
+									"const responseJson = pm.response.json();",
+									"pm.test(\"Validar datos del producto\", function () {",
+									"    pm.expect(responseJson.name).to.eql(pm.environment.get(\"dynamicName\"));",
+									"    pm.expect(responseJson.description).to.eql(pm.environment.get(\"dynamicDescription\"));",
+									"    pm.expect(responseJson.price).to.eql(parseFloat(pm.environment.get(\"dynamicPrice\")));",
+									"    pm.expect(responseJson.stock).to.eql(parseInt(pm.environment.get(\"dynamicStock\")));",
+									"    pm.expect(responseJson.categoryId).to.eql(pm.environment.get(\"dynamicCategoryId\"));",
+									"});",
+									"",
+									"// Imprimir en consola para depuración (opcional)",
+									"console.log(\"Respuesta de la API:\", responseJson);",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Generar un nombre dinámico para el producto\r",
+									"pm.environment.set(\"dynamicName\", \"Producto_\" + Math.floor(Math.random() * 1000));\r",
+									"\r",
+									"// Descripción fija para este ejemplo\r",
+									"pm.environment.set(\"dynamicDescription\", \"Descripción automática\");\r",
+									"\r",
+									"// Generar un precio aleatorio entre 10 y 100\r",
+									"pm.environment.set(\"dynamicPrice\", (Math.random() * 90 + 10).toFixed(2));\r",
+									"\r",
+									"// Generar un stock aleatorio entre 1 y 100\r",
+									"pm.environment.set(\"dynamicStock\", Math.floor(Math.random() * 100) + 1);\r",
+									"\r",
+									"// Asignar un CategoryId fijo (puedes cambiarlo si tu API requiere otro valor)\r",
+									"pm.environment.set(\"dynamicCategoryId\", 1);\r",
+									"\r",
+									"// Mostrar en consola para depuración (opcional)\r",
+									"console.log(\"Datos generados:\", {\r",
+									"    name: pm.environment.get(\"dynamicName\"),\r",
+									"    description: pm.environment.get(\"dynamicDescription\"),\r",
+									"    price: pm.environment.get(\"dynamicPrice\"),\r",
+									"    stock: pm.environment.get(\"dynamicStock\"),\r",
+									"    categoryId: pm.environment.get(\"dynamicCategoryId\")\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"{{dynamicName}}\",\n    \"description\": \"{{dynamicDescription}}\",\n    \"price\": {{dynamicPrice}},\n    \"stock\": {{dynamicStock}},\n    \"categoryId\": {{dynamicCategoryId}}\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{base_url}}api/Products/AddProduct",
+						"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+					},
+					"response": []
+				},
+				{
+					"name": "New Request",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Configurar datos dinámicos para la venta\r",
+									"pm.environment.set(\"productId\", 4); // ID del producto (puedes cambiarlo)\r",
+									"pm.environment.set(\"customerId\", 1); // ID del cliente (puedes cambiarlo)\r",
+									"pm.environment.set(\"quantity\", Math.floor(Math.random() * 10) + 1); // Cantidad aleatoria entre 1 y 10\r",
+									"pm.environment.set(\"saleDate\", new Date().toISOString()); // Fecha actual\r",
+									"pm.environment.set(\"total\", 480.35); // Total fijo (puedes calcularlo dinámicamente si es necesario)\r",
+									"\r",
+									"// Mostrar en consola para depuración\r",
+									"console.log(\"Datos de la venta generados:\", {\r",
+									"    productId: pm.environment.get(\"productId\"),\r",
+									"    customerId: pm.environment.get(\"customerId\"),\r",
+									"    quantity: pm.environment.get(\"quantity\"),\r",
+									"    saleDate: pm.environment.get(\"saleDate\"),\r",
+									"    total: pm.environment.get(\"total\")\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Verificar que el código de estado sea 201 (Creado)\r",
+									"pm.test(\"Código de estado: 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Validar que la respuesta sea JSON y contenga los datos esperados\r",
+									"pm.test(\"Validar datos de la venta\", function () {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    pm.expect(responseJson).to.have.property(\"productId\", parseInt(pm.environment.get(\"productId\")));\r",
+									"    pm.expect(responseJson).to.have.property(\"customerId\", parseInt(pm.environment.get(\"customerId\")));\r",
+									"    pm.expect(responseJson).to.have.property(\"quantity\", parseInt(pm.environment.get(\"quantity\")));\r",
+									"    pm.expect(responseJson).to.have.property(\"saleDate\");\r",
+									"    pm.expect(responseJson).to.have.property(\"total\", parseFloat(pm.environment.get(\"total\")));\r",
+									"});\r",
+									"\r",
+									"// Validar reducción del stock del producto\r",
+									"pm.sendRequest({\r",
+									"    url: `http://localhost:5144/api/Products/{{productId}}`,\r",
+									"    method: 'GET'\r",
+									"}, function (err, res) {\r",
+									"    if (!err) {\r",
+									"        const product = res.json();\r",
+									"        const expectedStock = product.stock + parseInt(pm.environment.get(\"quantity\"));\r",
+									"        pm.test(\"Validar que el stock del producto se redujo correctamente\", function () {\r",
+									"            pm.expect(product.stock).to.eql(expectedStock - parseInt(pm.environment.get(\"quantity\")));\r",
+									"        });\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									"// Mostrar en consola para depuración\r",
+									"console.log(\"Respuesta de la API:\", pm.response.json());\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"productId\": {{productId}},\r\n    \"customerId\": {{customerId}},\r\n    \"quantity\": {{quantity}},\r\n    \"saleDate\": \"{{saleDate}}\",\r\n    \"total\": {{total}}\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{base_url}}api/Sales/AddSale"
+					},
+					"response": []
+				},
+				{
+					"name": "Stock",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Verificar que el código de estado sea 200 (OK)",
+									"pm.test(\"Código de estado: 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// Validar que la respuesta sea texto y contenga el mensaje esperado",
+									"pm.test(\"Validar respuesta de texto\", function () {",
+									"    const responseText = pm.response.text(); // Obtener la respuesta como texto",
+									"    pm.expect(responseText).to.eql(\"Product updated successfully.\"); // Validar mensaje exacto",
+									"});",
+									"",
+									"// Mostrar en consola la respuesta (opcional)",
+									"console.log(\"Respuesta de la API:\", pm.response.text());",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Configurar el ID del producto a actualizar (puedes cambiarlo si es necesario)\r",
+									"pm.environment.set(\"productId\", 4); // Cambia esto al ID del producto que deseas actualizar\r",
+									"\r",
+									"// Obtener el nombre, descripción, precio y categoría existentes para mantenerlos iguales\r",
+									"pm.environment.set(\"productName\", \"Producto_224\"); // Nombre actual del producto\r",
+									"pm.environment.set(\"productDescription\", \"Descripción automática\"); // Descripción actual del producto\r",
+									"pm.environment.set(\"productPrice\", 96.07); // Precio actual del producto\r",
+									"pm.environment.set(\"productCategoryId\", 1); // Categoría actual del producto\r",
+									"\r",
+									"// Generar un stock aleatorio entre 1 y 100\r",
+									"pm.environment.set(\"productStock\", Math.floor(Math.random() * 100) + 1);\r",
+									"\r",
+									"// Mostrar en consola para depuración\r",
+									"console.log(\"Datos generados para actualización:\", {\r",
+									"    id: pm.environment.get(\"productId\"),\r",
+									"    name: pm.environment.get(\"productName\"),\r",
+									"    description: pm.environment.get(\"productDescription\"),\r",
+									"    price: pm.environment.get(\"productPrice\"),\r",
+									"    stock: pm.environment.get(\"productStock\"),\r",
+									"    categoryId: pm.environment.get(\"productCategoryId\")\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": {{productId}}, \n    \"name\": \"{{productName}}\",\n    \"description\": \"{{productDescription}}\",\n    \"price\": {{productPrice}},\n    \"stock\": {{productStock}},\n    \"categoryId\": {{productCategoryId}}\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{base_url}}api/Products/EditProduct",
+						"description": "This is a PUT request and it is used to overwrite an existing piece of data. For instance, after you create an entity with a POST request, you may want to modify that later. You can do that using a PUT request. You typically identify the entity being updated by including an identifier in the URL (eg. `id=1`).\n\nA successful PUT request typically returns a `200 OK`, `201 Created`, or `204 No Content` response code."
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "id",
+			"value": "1"
+		},
+		{
+			"key": "base_url",
+			"value": "https://postman-rest-api-learner.glitch.me/"
+		}
+	]
+}
