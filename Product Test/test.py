@@ -5,11 +5,11 @@ import string
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 
-# Configuración de logging
+
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
-# Conexión a tu base de datos existente
+
 CONNECTION_STRING = "mssql+pyodbc://sa:YourStrong!Passw0rd@localhost/Products?driver=ODBC+Driver+17+for+SQL+Server&TrustServerCertificate=yes"
 engine = create_engine(CONNECTION_STRING)
 Session = sessionmaker(bind=engine)
@@ -31,7 +31,7 @@ def test_category_product_relationship(session):
     logger.info("Iniciando prueba de relación entre categorías y productos.")
     
     try:
-        # Crear una categoría y un producto relacionado
+        
         logger.info(f"Creando categoría '{category_name}'.")
         session.execute(text(f"""
             INSERT INTO Categories (Name, Description)
@@ -46,7 +46,7 @@ def test_category_product_relationship(session):
         """))
         session.commit()
 
-        # Verificar la relación
+        
         logger.info("Verificando la relación entre el producto y la categoría.")
         result = session.execute(text(f"""
             SELECT p.Name, c.Name
@@ -58,14 +58,14 @@ def test_category_product_relationship(session):
         logger.info(f"Resultado de la consulta: {result}")
         print(f"Relación verificada: Producto '{result[0]}' pertenece a la categoría '{result[1]}'.")
         assert result is not None
-        assert result[0] == product_name  # Producto
-        assert result[1] == category_name  # Categoría
+        assert result[0] == product_name  
+        assert result[1] == category_name  
     except Exception as e:
         logger.error(f"Error durante la prueba: {e}")
         raise
 
 def test_product_sale_relationship(session):
-    # Generar nombres aleatorios para garantizar unicidad
+    
     customer_first_name = f"Customer_{random_string()}"
     customer_last_name = f"Last_{random_string()}"
     customer_email = f"{random_string()}@example.com"
@@ -75,7 +75,7 @@ def test_product_sale_relationship(session):
     logger.info("Iniciando prueba de relación entre productos y ventas.")
 
     try:
-        # Asegurar que la categoría 'General' exista
+        
         logger.info(f"Verificando existencia de la categoría '{category_name}'.")
         session.execute(text(f"""
             IF NOT EXISTS (SELECT 1 FROM Categories WHERE Name = '{category_name}')
@@ -85,14 +85,14 @@ def test_product_sale_relationship(session):
             END
         """))
 
-        # Crear un cliente
+        
         logger.info(f"Creando cliente '{customer_first_name} {customer_last_name}'.")
         session.execute(text(f"""
             INSERT INTO Customers (FirstName, LastName, Email, Phone)
             VALUES ('{customer_first_name}', '{customer_last_name}', '{customer_email}', '1234567890')
         """))
 
-        # Crear un producto relacionado
+        
         logger.info(f"Creando producto '{product_name}' relacionado con la categoría '{category_name}'.")
         session.execute(text(f"""
             INSERT INTO Products (Name, Description, Price, Stock, CategoryId)
@@ -101,7 +101,7 @@ def test_product_sale_relationship(session):
         """))
         session.commit()
 
-        # Crear una venta
+        
         logger.info(f"Creando venta para el producto '{product_name}' relacionado con el cliente '{customer_first_name} {customer_last_name}'.")
         session.execute(text(f"""
             INSERT INTO Sales (ProductId, CustomerId, Quantity, SaleDate, Total)
@@ -113,7 +113,7 @@ def test_product_sale_relationship(session):
         """))
         session.commit()
 
-        # Verificar la relación
+        
         logger.info("Verificando la relación entre la venta, el producto y el cliente.")
         result = session.execute(text(f"""
             SELECT s.Quantity, p.Name, c.FirstName, c.LastName
@@ -126,10 +126,10 @@ def test_product_sale_relationship(session):
         logger.info(f"Resultado de la consulta: {result}")
         print(f"Relación verificada: Cliente '{result[2]} {result[3]}' compró '{result[1]}' (cantidad: {result[0]}).")
         assert result is not None
-        assert result[0] == 1  # Cantidad
-        assert result[1] == product_name  # Producto
-        assert result[2] == customer_first_name  # Cliente Nombre
-        assert result[3] == customer_last_name  # Cliente Apellido
+        assert result[0] == 1  
+        assert result[1] == product_name  
+        assert result[2] == customer_first_name  
+        assert result[3] == customer_last_name  
     except Exception as e:
         logger.error(f"Error durante la prueba: {e}")
         raise
